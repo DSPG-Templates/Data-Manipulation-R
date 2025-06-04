@@ -1,0 +1,121 @@
+---
+title: Restructuring Data Assignment
+subtitle: Working with data in tidyr and dplyr
+date: last-modifed
+---
+
+```{r}
+require(tidyr)
+require(dplyr)
+```
+
+## Filtering and Mutating
+
+Filter the data such that the count of those who make less than $10k dollars 
+a year is below 20 people. Filter the data again such that the counts of those
+who `Don't know/refused` are between 50 and 150 (inclusive).
+
+```{r}
+relig_income
+
+?dplyr::filter
+```
+
+Create two new columns for `Don't know/refused` which are lower limits and an upper limits.
+The lower limit should be the values less 10 (-10) and the upper limit are the values
+plus 10 (+10).
+
+This will be even more impressive if you make a single `mutate`.
+
+```{r}
+relig_income
+
+?mutate()
+```
+
+## Pivoting and Grouping
+
+Pivot the data so that the numeric variables all fall under a new column called
+`income_brackets` and the values get pivoted to a column called `people_counts`.
+After the pivot, group the data and summarize so that an average and a standard 
+deviation is calculated for each available income bracket.
+
+```{r}
+relig_income
+
+?mean()
+?sd()
+?pivot_longer()
+?group_by()
+?summarise()
+```
+
+## Binding Additional Data
+
+Use the vectors created below to add the data correctly to the original data. Make
+sure to reorder the columns in a way that follows numerical order.
+
+```{r}
+`$150k-$200k` <- round(rnorm(nrow(relig_income), mean = 60, sd = 10))
+`>$200k`<- round(rnorm(nrow(relig_income), mean = 30, sd = 10))
+
+new_religion <- c("DSPG'ism", round(rpois(11, 8)))
+```
+
+```{r}
+relig_income
+
+?cbind()
+?rbind()
+?relocate()
+```
+
+## Performing Joins
+
+The following code generates a new version of the data with an id, this data frame
+is called `relig_income_id`. There is also another data frame that is calculated
+with the same id's called `us_regions`. Join the `us_regions` data to `relig_income_id`.
+Make sure you also reorder the columns such that the `id` is first, the `religion`
+is second, and the `region` is third.
+
+```{r}
+# Generate some id's
+id <- sample(1000:2000, size = 18, replace = F)
+
+# Add to a dataframe
+relig_income_id <- relig_income %>% 
+    cbind(id) %>% 
+    relocate(id, .after = religion)
+
+# Make another data.frame with same id's and us regions
+us_regions <- data.frame(
+                geoid = id, 
+                region = sample(c("North", "East", "West", 
+                                  "Mid", "South"), 
+                                 size = 18, 
+                                 replace = T)) %>%
+                                 arrange(id)
+```
+
+```{r}
+relig_income
+
+?right_join()
+?left_join()
+?full_join()
+?relocate()
+```
+
+## Bonus Task
+
+Using `mutate()` and `across()`, convert every count into a percentage for each 
+as a proportion to the sum of the column it is a part of.
+
+```{r}
+relig_income
+
+# Note that you will likely need to design a custom function.
+
+?mutate()
+?across()
+```
